@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.example.pregnantEat" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>pregnantEat</name>
+    <description>pregnantEat</description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <icon desity="ldpi" src="res/images/ldpi.png" />
+        <icon desity="mdpi" src="res/images/mdpi.png" />
+        <icon desity="hdpi" src="res/images/hdpi.png" />
+        <icon desity="xhdpi" src="res/images/xhdpi.png" />
+        <icon desity="xxhdpi" src="res/images/xxhdpi.png" />
+        <icon desity="xxxhdpi" src="res/images/xxxhdpi.png" />
+    </platform>
+    <allow-navigation href="about:*" />
+</widget>

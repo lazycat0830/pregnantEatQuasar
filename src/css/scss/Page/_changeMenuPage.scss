@@ -1,0 +1,42 @@
+.dropbox {
+  width: 110px;
+  height: 100px;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px #000 solid;
+  .q-card {
+    width: 100%;
+    height: 80px;
+    .q-img {
+      height: 60px;
+    }
+  }
+}
+
+.allcardFood {
+  display: flex;
+  justify-content: start;
+  max-height: 270px;
+  overflow-y: scroll;
+  .q-card {
+    .q-img {
+      height: 60px;
+    }
+    margin: 5px;
+    width: calc(85% / 3);
+    height: 80px;
+    text-align: center;
+  }
+}
+
+.askordercard {
+  .q-card {
+    margin: 5px;
+    .q-img {
+      height: 60px;
+    }
+
+    height: 80px;
+    text-align: center;
+  }
+}

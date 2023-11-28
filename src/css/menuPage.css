@@ -1,0 +1,1 @@
+html{width:100vmax}@media only screen and (orientation: landscape){html{overflow-x:hidden}}@media only screen and (orientation: portrait){html{overflow-y:hidden;transform:rotate(90deg) translateY(-100%);transform-origin:top left}}html body{margin:0}/*# sourceMappingURL=menuPage.css.map */
