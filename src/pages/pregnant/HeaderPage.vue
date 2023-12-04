@@ -20,13 +20,15 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, reactive } from "vue";
+import { ref, defineProps, computed, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import menuPage from "./components/menuPage.vue";
 import scopedPage from "./components/scopedPage.vue";
 
 import CarouselCard from "./components/CarouselCard.vue";
 import historicalPage from "./components/historicalPage.vue";
+
+import axios from "axios";
 
 const inView = ref(Array.apply(null, Array(10)).map((_) => false));
 const date = new Date();
@@ -123,6 +125,93 @@ const stapleFood = ref([
 ]);
 // ,
 //   { type: "other", name: "其他", dataList: [{ name: "", src: "" }] },
+
+onMounted(async () => {
+  await api();
+});
+
+const token = ref("");
+const api = async () => {
+  //登入
+  await axios
+    .post("http://localhost:55688/api/Auth/login", {
+      account: "admin",
+      password: "admin",
+    })
+    .then((res) => {
+      console.log(res.data.data);
+      token.value = res.data.data.token;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  //取得所有餐點
+  await axios
+    .get("http://localhost:55688/api/Dish/getDishes")
+    .then((res) => {
+      console.log("getDishes", res.data.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  //取得使用者資料
+  await axios
+    .get("http://localhost:55688/api/Auth/user", {
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
+    })
+    .then((res) => {
+      console.log("getUser", res.data.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  //推薦 401錯誤
+  // await axios
+  //   .get("http://localhost:55688/api/Dish/recommend", {
+  //     headers: {
+  //       Authorization: `Bearer ${token.value}`,
+  //     },
+  //   })
+  //   .then((res) => {
+  //     console.log("getUser", res.data);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  //忘記密碼 400錯誤
+  // await axios
+  //   .get("http://localhost:55688/api/Auth/forgetpassword", { account: "admin" })
+  //   .then((res) => {
+  //     console.log("forgetpassword", res.data);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  //註冊
+  //註冊一定要圖片
+  const Register = new FormData();
+  Register.append("account", "1111");
+  Register.append("password", "1111");
+  Register.append("name", "1111");
+  Register.append("phone", "1111");
+  Register.append("email", "1111");
+  Register.append("role", "1111");
+  Register.append("pocture", "");
+  // await axios
+  //   .post("http://localhost:55688/api/Auth/register", Register, {
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //   })
+  //   .then((res) => {
+  //     console.log(res.data);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+};
 </script>
 <style>
 .my-card {
