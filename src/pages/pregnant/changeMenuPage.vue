@@ -240,9 +240,9 @@
                     <q-card class="column">
                       <div class="row justify-center">
                         <q-img
-                          src="/public/images/menu/Dishes/干貝蒸蛋.png"
+                          src="/public/images/menu/Dishes/黑胡椒豬柳.jpg"
                         ></q-img>
-                        干貝蒸蛋
+                        黑胡椒豬柳
                       </div>
                     </q-card>
                   </div>
@@ -256,9 +256,9 @@
                     <q-card class="column">
                       <div class="row justify-center">
                         <q-img
-                          src="/public/images/menu/Dishes/青椒炒牛肉.jpg"
+                          src="/public/images/menu/Dishes/青龍炒肉片.jpg"
                         ></q-img>
-                        青椒炒牛肉
+                        青龍炒肉片
                       </div>
                     </q-card>
                   </div>
