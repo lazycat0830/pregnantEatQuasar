@@ -65,7 +65,7 @@
         <q-card-section style="padding-top: 70px">
           <!-- 在這裡面放你喜歡的表格 -->
           <div class="col">
-            <div class="row" style="width: 100%; height: 80%">
+            <div class="row container" style="width: 100%; height: 80%">
               <div style="width: 50%">
                 <div class="row justify-center">
                   <!-- <canvas
@@ -74,7 +74,7 @@
                   ></canvas> -->
                   <div>
                     <div style="font-size: 18px; font-weight: bolder">
-                      2023/11/02 午餐 套餐
+                      {{ hisoryState.year }} {{ hisoryState.type }} 套餐
                     </div>
                   </div>
                 </div>
@@ -82,7 +82,7 @@
                   class="row justify-center"
                   style="padding-top: 10px; position: relative"
                 >
-                  <div
+                  <!-- <div
                     class="row justify-center"
                     style="
                       position: absolute;
@@ -213,8 +213,9 @@
                     >
                       水果
                     </div>
-                  </div>
+                  </div> -->
                   <div
+                    data-drop="copy"
                     ref="box2"
                     style="position: relative"
                     class="grey dropbox"
@@ -230,6 +231,7 @@
                     </q-card>
                   </div>
                   <div
+                    data-drop="copy"
                     ref="box3"
                     class="grey dropbox"
                     @click.stop="closeFood"
@@ -245,7 +247,12 @@
                     </q-card>
                   </div>
 
-                  <div ref="box4" class="grey dropbox" @click.stop="closeFood">
+                  <div
+                    ref="box4"
+                    data-drop="copy"
+                    class="grey dropbox"
+                    @click.stop="closeFood"
+                  >
                     <q-card class="column">
                       <div class="row justify-center">
                         <q-img
@@ -255,7 +262,12 @@
                       </div>
                     </q-card>
                   </div>
-                  <div ref="box5" class="grey dropbox" @click.stop="closeFood">
+                  <div
+                    ref="box5"
+                    data-drop="copy"
+                    class="grey dropbox"
+                    @click.stop="closeFood"
+                  >
                     <q-card class="column">
                       <div class="row justify-center">
                         <q-img
@@ -267,6 +279,7 @@
                   </div>
                   <div
                     ref="box6"
+                    data-drop="copy"
                     class="grey dropbox"
                     @click.stop="closeFood"
                     style="position: relative"
@@ -282,6 +295,7 @@
                   </div>
                   <div
                     ref="box7"
+                    data-drop="copy"
                     class="grey dropbox"
                     @click.stop="closeFood"
                     style="position: relative"
@@ -340,8 +354,11 @@
                       style="width: 100%; flex-wrap: wrap"
                       class="row allcardFood"
                       ref="box1"
+                      data-drop="move"
                     >
                       <q-card
+                        data-effect="copy"
+                        draggable="true"
                         class="column"
                         v-for="food in changeFood[changeOrder.value]"
                         :key="food"
@@ -375,8 +392,8 @@
                     class="row justify-center items-end"
                     :class="showVoice ? 'bg-grey-30' : ''"
                     style="
-                      height: 200px;
-                      max-height: 200px;
+                      height: 400px;
+                      max-height: 400px;
                       padding: 0px;
                       overflow: hidden;
                       overflow-y: scroll;
@@ -406,6 +423,7 @@
                             class="row askordercard"
                           >
                             <q-card
+                              data-effect="copy"
                               class="column"
                               v-for="food in message.food"
                               :key="food"
@@ -423,7 +441,7 @@
                     <div
                       style="
                         position: absolute;
-                        width: 50%;
+                        width: 25%;
                         height: 100%;
                         bottom: 0px;
                       "
@@ -497,8 +515,8 @@
                     class="row justify-center items-end"
                     :class="showVoiceSymptom ? 'bg-grey-30' : ''"
                     style="
-                      height: 200px;
-                      max-height: 200px;
+                      height: 400px;
+                      max-height: 400px;
                       padding: 0px;
                       overflow: hidden;
                       overflow-y: scroll;
@@ -528,6 +546,7 @@
                             class="row askordercard"
                           >
                             <q-card
+                              data-effect="copy"
                               class="column"
                               v-for="food in Symptmessage.food"
                               :key="food"
@@ -552,7 +571,7 @@
                     <div
                       style="
                         position: absolute;
-                        width: 50%;
+                        width: 25%;
                         height: 100%;
                         bottom: 0px;
                       "
@@ -650,13 +669,73 @@ import voicePage from "./components/voicePage.vue";
 const changeOrder = ref({ label: "主食", value: "main" });
 const nowAction = ref("changeOrder");
 const persistent = ref(false);
+const hisoryState = ref(history.state);
+console.log(hisoryState.value);
 
 const router = useRouter();
 
 onMounted(() => {
   // forceLandscapeOrientation();
-  drop();
+  // drop();
   // drawPlate();
+  const container = document.querySelector(".container");
+  let source;
+  container.ondragstart = (e) => {
+    e.dataTransfer.effectAllowed = e.target.dataset.effect;
+    source = e.target;
+  };
+
+  container.ondragover = (e) => {
+    e.preventDefault();
+  };
+
+  function getDropNode(node) {
+    while (node) {
+      if (node.dataset.drop) {
+        return node;
+      }
+      node = node.parentNode;
+    }
+  }
+
+  function clearDropStyle() {
+    const dropNodes = document.querySelectorAll(".drop-over");
+    dropNodes.forEach((node) => {
+      node.classList.remove("drop-over");
+    });
+  }
+
+  container.ondragenter = (e) => {
+    clearDropStyle();
+    const dropNode = getDropNode(e.target);
+    console.log("enter", e.target);
+    if (!dropNode) {
+      return;
+    }
+    if (e.dataTransfer.effectAllowed === dropNode.dataset.drop) {
+      dropNode.classList.add("drop-over");
+    }
+  };
+
+  container.ondrop = (e) => {
+    clearDropStyle();
+    const dropNode = getDropNode(e.target);
+    if (!dropNode) {
+      return;
+    }
+    if (e.dataTransfer.effectAllowed !== dropNode.dataset.drop) {
+      return;
+    }
+    console.log("drop", e.target);
+    if (dropNode.dataset.drop === "copy") {
+      dropNode.innerHTML = "";
+      const cloned = source.cloneNode(true);
+      cloned.dataset.effect = "move";
+      dropNode.appendChild(cloned);
+    } else {
+      source.remove();
+    }
+  };
 });
 const box1 = ref(null);
 const box8 = ref(null);
@@ -717,7 +796,7 @@ const closeFood = (evt) => {
 
 const toHistoricalRecord = () => {
   router.push({
-    name: "historicalRecord",
+    name: "headerPage",
   });
 };
 
@@ -749,7 +828,7 @@ const sumbitMessage = () => {
   messageArray.value.push({
     name: "robot",
     avater: "https://cdn.quasar.dev/img/avatar5.jpg",
-    message: "推薦'清淡一點的湯''",
+    message: "推薦'清淡一點的湯'",
     time: dateTime.getTime(),
     food: [
       {
@@ -1047,6 +1126,8 @@ const showAnimaSymptom = ref(false);
 let i = 0;
 const closeVoice = () => {
   showAnima.value = !showAnima.value;
+  getRecommendAPI(sessionStorage.getItem("token"));
+
   i += 1;
   if (i == 2) {
     showVoice.value = false;
@@ -1054,9 +1135,15 @@ const closeVoice = () => {
   }
 };
 
+import api from "../javascript/API";
+const { getRecommendAPI } = api();
+
 let k = 0;
 const closeVoiceSymptom = () => {
+  // console.log(sessionStorage.getItem("token"));
   showAnimaSymptom.value = !showAnimaSymptom.value;
+  getRecommendAPI(sessionStorage.getItem("token"));
+  // showAnimaSymptom.value = !showAnimaSymptom.value;
   k += 1;
   if (k == 2) {
     showVoiceSymptom.value = false;

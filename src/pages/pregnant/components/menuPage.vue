@@ -30,11 +30,11 @@
       <q-card
         v-for="menudata in menu"
         :key="menudata"
-        style="width: 80%"
+        style="width: 30%"
         flat
         bordered
       >
-        <table style="width: 100%" class="HeaderimgTable">
+        <table style="width: 100%; height: 300px" class="HeaderimgTable">
           <tr>
             <td>
               <q-img style="width: 100%; height: 100%" :src="menudata.img1" />
@@ -85,7 +85,7 @@
                   class="text-h5 q-mt-sm q-mb-xs row items-center justify-between"
                 >
                   菜色
-                  <q-btn flat to="changeMenuPage"> 替換</q-btn>
+                  <q-btn flat @click="tochange(menudata.text)"> 替換</q-btn>
                 </div>
               </div>
               <div class="text-caption text-grey">
@@ -167,4 +167,14 @@ const menu = ref({
     text: "晚餐",
   },
 });
+
+const tochange = (type) => {
+  router.push({
+    name: "changeMenuPage",
+    state: {
+      year: date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + dayDate,
+      type,
+    },
+  });
+};
 </script>

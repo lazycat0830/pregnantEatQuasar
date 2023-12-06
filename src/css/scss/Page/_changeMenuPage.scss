@@ -16,7 +16,7 @@
 .allcardFood {
   display: flex;
   justify-content: start;
-  max-height: 270px;
+  max-height: 430px;
   overflow-y: scroll;
   .q-card {
     .q-img {
@@ -38,5 +38,26 @@
 
     height: 80px;
     text-align: center;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .dropbox {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+  }
+  .dropbox .q-card {
+    height: 100%;
+  }
+  .dropbox .q-card .q-img {
+    height: 150px;
+  }
+
+  .allcardFood .q-card {
+    height: auto;
+  }
+  .allcardFood .q-card .q-img {
+    height: 150px;
   }
 }

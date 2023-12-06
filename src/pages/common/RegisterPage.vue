@@ -15,6 +15,26 @@
       <table class="LoginTable">
         <tr>
           <td>
+            <div class="row justify-between" style="width: 30%">
+              <q-radio
+                v-model="RegisterObject.role"
+                val="產婦"
+                outlined
+                dense
+                label="產婦"
+              />
+              <q-radio
+                v-model="RegisterObject.role"
+                val="烹飪者"
+                outlined
+                dense
+                label="烹飪者"
+              />
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
             <q-input
               v-model="RegisterObject.name"
               outlined
@@ -110,16 +130,10 @@
         </tr>
         <tr>
           <td>
-            <q-input
-              v-model="RegisterObject.birthday"
-              type="date"
-              outlined
-              dense
-              style="width: 80%"
-              label="生日"
-            />
+            <q-file outlined v-model="picture" label="Outlined" />
           </td>
         </tr>
+
         <tr>
           <td>
             <div
@@ -132,11 +146,12 @@
               "
             >
               <!-- to="/SetRoles" -->
+              <!-- toolbar = true -->
               <q-btn
                 rounded
                 dense
                 color="orange-14"
-                @click="toolbar = true"
+                @click="doRegister()"
                 style="
                   width: 60%;
                   margin: 5px 0px;
@@ -182,10 +197,17 @@
 </template>
 <script setup>
 import HeaderLayout from "./components/HeaderLayout.vue";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
+
+import api from "../javascript/API";
+import { Input } from "postcss";
+
+const { RegisterAPI } = api();
+
+const picture = ref();
 const isPwd = ref(true);
 const toolbar = ref(false);
-const RegisterObject = ref({
+const RegisterObject = reactive({
   name: "",
   account: "",
   password: "",
@@ -194,8 +216,23 @@ const RegisterObject = ref({
   ispasswordCheck: true,
   phone: "",
   email: "",
-  birthday: "",
+  role: "產婦",
 });
+
+const doRegister = () => {
+  console.log(RegisterObject);
+  console.log(picture);
+  const registerFormData = new FormData();
+  registerFormData.append("account", RegisterObject.account);
+  registerFormData.append("password", RegisterObject.password);
+  registerFormData.append("name", RegisterObject.name);
+  registerFormData.append("phone", RegisterObject.phone);
+  registerFormData.append("email", RegisterObject.email);
+
+  registerFormData.append("role", RegisterObject.role);
+  registerFormData.append("picture", picture);
+  RegisterAPI(registerFormData);
+};
 </script>
 <style>
 .LoginTable tr td {

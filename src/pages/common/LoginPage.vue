@@ -91,6 +91,9 @@ import HeaderLayout from "./components/HeaderLayout.vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import ForgetPassword from "./ForgetPassword.vue";
+import api from "../javascript/API";
+
+const { LoginAPI } = api();
 
 const AccountValue = ref("");
 const PasswordValue = ref("");
@@ -98,31 +101,10 @@ const ForgetPasswordCheck = ref(false);
 
 const router = useRouter();
 const Login = () => {
-  if (AccountValue.value == "admin") {
-    router.push({
-      name: "AdminheaderPage",
-      state: {
-        accountName: "管理員 先生",
-        Roles: "管理員",
-      },
-    });
-  } else if (AccountValue.value == "maker") {
-    router.push({
-      name: "MakerheaderPage",
-      state: {
-        accountName: "中央廚房",
-        Roles: "製作者",
-      },
-    });
-  } else {
-    router.push({
-      name: "headerPage",
-      state: {
-        accountName: "王小姐",
-        Roles: "孕婦",
-      },
-    });
-  }
+  const UserData = LoginAPI({
+    account: AccountValue.value,
+    password: PasswordValue.value,
+  });
 };
 </script>
 <style>
