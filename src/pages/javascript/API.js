@@ -96,20 +96,20 @@ export default function () {
       });
   };
   //推薦 401錯誤
-  const getRecommendAPI = (token) => {
-    axios
-      .get("http://localhost:55688/api/Dish/recommend", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        console.log("getUser", res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // const getRecommendAPI = (token) => {
+  //   axios
+  //     .get("http://localhost:55688/api/Dish/recommend", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       console.log("getUser", res.data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
   //忘記密碼 v
   const ForgetpasswordAPI = (account) => {
     console.log(account);
@@ -130,7 +130,7 @@ export default function () {
     RegisterAPI,
     getDishesAPI,
     getUserAPI,
-    getRecommendAPI,
+    // getRecommendAPI,
     ForgetpasswordAPI,
   };
 }

@@ -58,7 +58,7 @@ const closeVoice = () => {
 }
 
 .border-wrapper {
-  position: absolute;
+  position: fixed;
   left: 40px;
   top: 100px;
   width: 100%;

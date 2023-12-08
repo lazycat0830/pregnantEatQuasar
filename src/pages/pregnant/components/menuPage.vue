@@ -7,17 +7,17 @@
         style="display: inline-flex"
       >
         <q-btn
-          v-if="dayDate !== date.getDate() + 1"
+          v-if="date.getDate() + 1 !== changeDate.getDate()"
           flat
+          @click="incrementDay(-1)"
           icon="chevron_left"
         ></q-btn>
-        <q-btn flat v-else></q-btn>
+
+        <!-- <q-btn flat v-else></q-btn> -->
         <span class="text-h6" style="font-weight: bolder">
-          &nbsp;{{
-            date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + dayDate
-          }}菜單 &nbsp;
+          &nbsp;{{ year + "/" + month + "/" + day }}菜單 &nbsp;
         </span>
-        <q-btn flat icon="chevron_right"></q-btn>
+        <q-btn flat icon="chevron_right" @click="incrementDay(1)"></q-btn>
       </q-toolbar>
     </q-card-section>
     <q-separator />
@@ -115,7 +115,25 @@ const item1 = ref(true);
 const props = defineProps({});
 const router = useRouter();
 const date = new Date();
-const dayDate = date.getDate() + 1;
+console.log(date);
+const year = ref(date.getFullYear());
+const month = ref(date.getMonth());
+const day = ref(date.getDate() + 1);
+const changeDate = new Date(year.value, month.value, day.value);
+// const dayDate = date.getDate() + 1;
+
+const incrementDay = (i) => {
+  day.value += 1 * i;
+  changeDate.setFullYear(year.value, month.value, day.value);
+  year.value = changeDate.getFullYear();
+  if (changeDate.getMonth() == 0) {
+    month.value = 1;
+  } else {
+    month.value = changeDate.getMonth();
+  }
+
+  day.value = changeDate.getDate();
+};
 
 const menu = ref({
   breakfast: {
@@ -172,7 +190,12 @@ const tochange = (type) => {
   router.push({
     name: "changeMenuPage",
     state: {
-      year: date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + dayDate,
+      year:
+        changeDate.getFullYear() +
+        "/" +
+        (changeDate.getMonth() + 1) +
+        "/" +
+        changeDate.getDate(),
       type,
     },
   });

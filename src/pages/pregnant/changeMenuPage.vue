@@ -1,12 +1,4 @@
 <template>
-  <!-- style="position: relative" -->
-  <!-- style="
-        transform: rotate(90deg);
-        width: 736px;
-        position: absolute;
-        top: 150px;
-        left: -170px;
-      " -->
   <div>
     <div>
       <q-card flat bordered style="width: 100%">
@@ -25,13 +17,14 @@
             </div>
 
             <div class="row q-gutter-sm">
+              <!-- @click="drop()" -->
               <q-btn
+                @click="nowAction = 'changeOrder'"
                 :class="
                   nowAction === 'changeOrder'
                     ? 'bg-dark text-grey-1'
                     : 'bg-grey-1 text-dark'
                 "
-                @click="drop()"
                 ><div class="column justify-center items-center">
                   <div>菜色替換</div>
                 </div></q-btn
@@ -79,32 +72,10 @@
                   </div>
                 </div>
                 <div
-                  class="row justify-center"
+                  class="row justify-center menuDrop"
                   style="padding-top: 10px; position: relative"
                 >
                   <!-- <div
-                    class="row justify-center"
-                    style="
-                      position: absolute;
-                      top: 10px;
-                      left: 15px;
-                      z-index: 80;
-                      width: 30%;
-                    "
-                  >
-                    <div
-                      style="
-                        text-align: center;
-                        background-color: black;
-                        border-radius: 20px;
-                        width: 60%;
-                      "
-                      class="text-grey-1"
-                    >
-                      主食
-                    </div>
-                  </div>
-                  <div
                     class="row justify-center"
                     style="
                       position: absolute;
@@ -217,7 +188,6 @@
                   <div
                     data-drop="copy"
                     ref="box2"
-                    style="position: relative"
                     class="grey dropbox"
                     @click.stop="closeFood"
                   >
@@ -318,7 +288,7 @@
                   >
                 </div>
               </div>
-              <div class="dropFood-changebox">
+              <div class="dropFood-changebox" data-drop="move">
                 <q-card
                   v-if="nowAction === 'changeOrder'"
                   flat
@@ -354,7 +324,6 @@
                       style="width: 100%; flex-wrap: wrap"
                       class="row allcardFood"
                       ref="box1"
-                      data-drop="move"
                     >
                       <q-card
                         data-effect="copy"
@@ -371,10 +340,6 @@
                     </div>
                   </q-card-section>
                 </q-card>
-                <!-- <askOrder
-                  v-if="nowAction === 'askOrder'"
-                  :actionTitle="nowAction"
-                ></askOrder> -->
 
                 <q-card flat bordered v-if="nowAction === 'askOrder'">
                   <q-card-section class="q-py-xs q-px-xs bg-amber-8 text-white">
@@ -401,39 +366,51 @@
                     "
                   >
                     <!-- 在這裡面放你喜歡的表格 -->
+                    <!-- 小助手 -->
                     <div style="width: 80%">
-                      <div>
+                      <div
+                        v-for="SelectMeal in allSelectMeal"
+                        :key="SelectMeal"
+                      >
+                        <div v-if="SelectMeal.length != 0">
+                          <q-chat-message
+                            v-for="food in SelectMeal"
+                            :key="food"
+                            name="robot"
+                            :avatar="'https://cdn.quasar.dev/img/avatar5.jpg'"
+                            :sent="false"
+                            size="8"
+                            bg-color="amber-7"
+                          >
+                            <div
+                              ref="box8"
+                              style="width: 100%"
+                              class="row askordercard"
+                            >
+                              <q-card
+                                data-effect="copy"
+                                draggable="true"
+                                class="column"
+                              >
+                                <div class="row justify-center items-center">
+                                  <q-img :src="food.image"></q-img>
+                                  <span>{{ food.name }}</span>
+                                </div>
+                              </q-card>
+                              <p>類型：{{ food.type }}</p>
+                            </div>
+                          </q-chat-message>
+                        </div>
+
                         <q-chat-message
-                          v-for="message in messageArray"
-                          :key="message"
-                          :name="message.name"
-                          :avatar="message.avatar"
-                          :sent="message.name === 'me'"
+                          v-else
+                          name="robot"
+                          :avatar="'https://cdn.quasar.dev/img/avatar5.jpg'"
+                          :sent="false"
                           size="8"
                           bg-color="amber-7"
                         >
-                          <div>{{ message.message }}</div>
-                          <div
-                            ref="box8"
-                            v-if="
-                              message.name === 'robot' &&
-                              message.food.length !== 0
-                            "
-                            style="width: 100%"
-                            class="row askordercard"
-                          >
-                            <q-card
-                              data-effect="copy"
-                              class="column"
-                              v-for="food in message.food"
-                              :key="food"
-                            >
-                              <div class="row justify-center">
-                                <q-img :src="food.img"></q-img>
-                                {{ food.foodName }}
-                              </div>
-                            </q-card>
-                          </div>
+                          <span>無推薦</span>
                         </q-chat-message>
                       </div>
                     </div>
@@ -472,33 +449,20 @@
                     <!-- 在下方div放你喜歡的按鈕 -->
                   </q-card-section>
                   <q-card-section>
-                    <q-input
-                      v-model="inputMessage"
+                    <q-btn
+                      flat
                       dense
-                      outlined
-                      @keyup.enter="sumbitMessage()"
-                    >
-                      <template #after
-                        ><q-btn
-                          flat
-                          dense
-                          round
-                          icon="subdirectory_arrow_left"
-                          @click="sumbitMessage()"
-                        ></q-btn
-                      ></template>
-                      <template #prepend
-                        ><q-btn
-                          flat
-                          dense
-                          round
-                          icon="mic"
-                          @click="showVoice = true"
-                        ></q-btn
-                      ></template>
-                    </q-input>
+                      style="
+                        width: 100%;
+                        padding: 20px 0px;
+                        border: 1px #111 solid;
+                      "
+                      icon="mic"
+                      @click="showVoice = !showVoice"
+                    ></q-btn>
                   </q-card-section>
                 </q-card>
+
                 <q-card flat bordered v-if="nowAction === 'askSymptom'">
                   <q-card-section class="q-py-xs q-px-xs bg-amber-8 text-white">
                     <!-- 在這個q-toolbar放你的標頭 -->
@@ -524,47 +488,65 @@
                     "
                   >
                     <!-- 在這裡面放你喜歡的表格 -->
+                    <!-- 食療 -->
+                    <!-- allDietTherapy -->
                     <div style="width: 80%">
-                      <div>
+                      <div
+                        v-for="DietTherapy in allDietTherapy"
+                        :key="DietTherapy"
+                      >
+                        <div v-if="DietTherapy.length != 0">
+                          <q-chat-message
+                            v-for="food in DietTherapy"
+                            :key="food"
+                            name="robot"
+                            :avatar="'https://cdn.quasar.dev/img/avatar5.jpg'"
+                            :sent="false"
+                            size="8"
+                            bg-color="amber-7"
+                          >
+                            <div
+                              ref="box8"
+                              style="width: 100%"
+                              class="row askordercard"
+                            >
+                              <!-- style="height: auto" -->
+                              <q-card
+                                data-effect="copy"
+                                draggable="true"
+                                class="column"
+                              >
+                                <!-- style="width: 150px; height: 150px" -->
+                                <div class="row justify-center items-center">
+                                  <!-- style="height: 70%" -->
+                                  <q-img :src="food.image"></q-img>
+                                  <span>{{ food.name }}</span>
+                                </div>
+                              </q-card>
+
+                              <div
+                                style="
+                                  color: #292929;
+                                  font-size: 1rem;
+                                  font-weight: bolder;
+                                "
+                              >
+                                類型：{{ food.type }}<br />
+                                關鍵字：{{ food.therapy }}
+                              </div>
+                            </div>
+                          </q-chat-message>
+                        </div>
+
                         <q-chat-message
-                          v-for="Symptmessage in messageSymptArray"
-                          :key="Symptmessage"
-                          :name="Symptmessage.name"
-                          :avatar="Symptmessage.avatar"
-                          :sent="Symptmessage.name === 'me'"
+                          v-else
+                          name="robot"
+                          :avatar="'https://cdn.quasar.dev/img/avatar5.jpg'"
+                          :sent="false"
                           size="8"
                           bg-color="amber-7"
                         >
-                          <div>{{ Symptmessage.message }}</div>
-                          <div
-                            ref="box9"
-                            v-if="
-                              Symptmessage.name === 'robot' &&
-                              Symptmessage.food.length !== 0
-                            "
-                            style="width: 100%"
-                            class="row askordercard"
-                          >
-                            <q-card
-                              data-effect="copy"
-                              class="column"
-                              v-for="food in Symptmessage.food"
-                              :key="food"
-                            >
-                              <div class="row justify-center">
-                                <q-img :src="food.img"></q-img>
-                                {{ food.foodName }}
-                              </div>
-                            </q-card>
-                          </div>
-                          <div
-                            v-if="
-                              Symptmessage.name === 'robot' &&
-                              Symptmessage.food.length !== 0
-                            "
-                          >
-                            {{ Symptmessage.illustrate }}
-                          </div>
+                          <span>無推薦</span>
                         </q-chat-message>
                       </div>
                     </div>
@@ -602,31 +584,17 @@
                     <!-- 在下方div放你喜歡的按鈕 -->
                   </q-card-section>
                   <q-card-section>
-                    <q-input
-                      v-model="inputSymptMessage"
+                    <q-btn
+                      flat
                       dense
-                      outlined
-                      @keyup.enter="sumbitSymptMessage()"
-                    >
-                      <template #after
-                        ><q-btn
-                          flat
-                          dense
-                          round
-                          icon="subdirectory_arrow_left"
-                          @click="sumbitSymptMessage()"
-                        ></q-btn
-                      ></template>
-                      <template #prepend
-                        ><q-btn
-                          flat
-                          dense
-                          round
-                          icon="mic"
-                          @click="showVoiceSymptom = true"
-                        ></q-btn
-                      ></template>
-                    </q-input>
+                      style="
+                        width: 100%;
+                        padding: 20px 0px;
+                        border: 1px #111 solid;
+                      "
+                      icon="mic"
+                      @click="showVoiceSymptom = !showVoiceSymptom"
+                    ></q-btn>
                   </q-card-section>
                 </q-card>
               </div>
@@ -669,13 +637,15 @@ import {
   reactive,
 } from "vue";
 import { useRouter } from "vue-router";
-import Sortable from "sortablejs";
+// import Sortable from "sortablejs";
 // import { Drag, Drop } from "vue3-drag-drop";
 import askOrder from "src/pages/pregnant/components/askOrder.vue";
 import voicePage from "./components/voicePage.vue";
-
+import axios from "axios";
 import api from "../javascript/API";
-const { getRecommendAPI, getDishesAPI } = api();
+const { getDishesAPI } = api();
+
+// getRecommendAPI,
 
 const changeOrder = ref({ label: "主食", value: "main" });
 const nowAction = ref("changeOrder");
@@ -878,9 +848,15 @@ const closeFood = (evt) => {
 };
 
 const toHistoricalRecord = () => {
-  router.push({
-    name: "headerPage",
-  });
+  console.log(box2.value);
+  console.log(box3.value);
+  console.log(box4.value);
+  console.log(box5.value);
+  console.log(box6.value);
+  console.log(box7.value);
+  // router.push({
+  //   name: "headerPage",
+  // });
 };
 
 const back = () => {
@@ -897,42 +873,42 @@ const messageSymptArray = ref([]);
 
 const dateTime = new Date();
 
-const sumbitMessage = () => {
-  if (!inputMessage.value) {
-    return;
-  }
-  messageArray.value.push({
-    name: "me",
-    avater: "https://cdn.quasar.dev/img/avatar3.jpg",
-    message: inputMessage.value,
-    time: dateTime.getTime(),
-  });
-  inputMessage.value = "";
-  messageArray.value.push({
-    name: "robot",
-    avater: "https://cdn.quasar.dev/img/avatar5.jpg",
-    message: "推薦'清淡一點的湯'",
-    time: dateTime.getTime(),
-    food: [
-      {
-        foodName: "金針薑絲雞湯",
-        img: "/public/images/menu/Soup/金針薑絲雞湯_0.jpg",
-      },
-      {
-        foodName: "青木瓜排骨湯",
-        img: "/public/images/menu/Soup/青木瓜排骨湯_0.jpg",
-      },
-      {
-        foodName: "牛肉高麗菜湯",
-        img: "/public/images/menu/Soup/牛肉高麗菜湯.png",
-      },
-    ],
-  });
-  setTimeout(function () {
-    // 這是你想要在10秒後執行的程式碼
-    askdrop();
-  }, 50);
-};
+// const sumbitMessage = () => {
+//   if (!inputMessage.value) {
+//     return;
+//   }
+//   messageArray.value.push({
+//     name: "me",
+//     avater: "https://cdn.quasar.dev/img/avatar3.jpg",
+//     message: inputMessage.value,
+//     time: dateTime.getTime(),
+//   });
+//   inputMessage.value = "";
+//   messageArray.value.push({
+//     name: "robot",
+//     avater: "https://cdn.quasar.dev/img/avatar5.jpg",
+//     message: "推薦'清淡一點的湯'",
+//     time: dateTime.getTime(),
+//     food: [
+//       {
+//         foodName: "金針薑絲雞湯",
+//         img: "/public/images/menu/Soup/金針薑絲雞湯_0.jpg",
+//       },
+//       {
+//         foodName: "青木瓜排骨湯",
+//         img: "/public/images/menu/Soup/青木瓜排骨湯_0.jpg",
+//       },
+//       {
+//         foodName: "牛肉高麗菜湯",
+//         img: "/public/images/menu/Soup/牛肉高麗菜湯.png",
+//       },
+//     ],
+//   });
+//   setTimeout(function () {
+//     // 這是你想要在10秒後執行的程式碼
+//     askdrop();
+//   }, 50);
+// };
 
 const askdrop = () => {
   nowAction.value = "askOrder";
@@ -1018,65 +994,124 @@ const askdropSympt = () => {
   });
 };
 
-const sumbitSymptMessage = () => {
-  if (!inputSymptMessage.value) {
-    return;
-  }
-  messageSymptArray.value.push({
-    name: "me",
-    avater: "https://cdn.quasar.dev/img/avatar3.jpg",
-    message: inputSymptMessage.value,
-    time: dateTime.getTime(),
-  });
-  inputSymptMessage.value = "";
-  messageSymptArray.value.push({
-    name: "robot",
-    avater: "https://cdn.quasar.dev/img/avatar5.jpg",
-    message: "'頭痛','心情不好'推薦",
-    illustrate:
-      "提供Omega-3脂肪酸，減緩身體發炎、鎂離子，神經肌肉放鬆、維生素B，幫助神經放鬆",
-    time: dateTime.getTime(),
-    food: [
-      {
-        foodName: "鮭魚意大利麵",
-        img: "/public/images/menu/mainMeal/鮭魚意大利麵.jpg",
-      },
-    ],
-  });
-  setTimeout(function () {
-    // 這是你想要在10秒後執行的程式碼
-    askdropSympt();
-  }, 50);
-};
+// const sumbitSymptMessage = () => {
+//   if (!inputSymptMessage.value) {
+//     return;
+//   }
+//   messageSymptArray.value.push({
+//     name: "me",
+//     avater: "https://cdn.quasar.dev/img/avatar3.jpg",
+//     message: inputSymptMessage.value,
+//     time: dateTime.getTime(),
+//   });
+//   inputSymptMessage.value = "";
+//   messageSymptArray.value.push({
+//     name: "robot",
+//     avater: "https://cdn.quasar.dev/img/avatar5.jpg",
+//     message: "'頭痛','心情不好'推薦",
+//     illustrate:
+//       "提供Omega-3脂肪酸，減緩身體發炎、鎂離子，神經肌肉放鬆、維生素B，幫助神經放鬆",
+//     time: dateTime.getTime(),
+//     food: [
+//       {
+//         foodName: "鮭魚意大利麵",
+//         img: "/public/images/menu/mainMeal/鮭魚意大利麵.jpg",
+//       },
+//     ],
+//   });
+//   setTimeout(function () {
+//     // 這是你想要在10秒後執行的程式碼
+//     askdropSympt();
+//   }, 50);
+// };
 
 const showVoice = ref(false);
 const showAnima = ref(false);
 const showVoiceSymptom = ref(false);
 const showAnimaSymptom = ref(false);
 
-let i = 0;
-const closeVoice = () => {
-  showAnima.value = !showAnima.value;
-  getRecommendAPI(sessionStorage.getItem("token"));
+//選餐推薦歷史
+const allSelectMeal = ref([]);
+//選餐推薦
+const getSelectMeal = ref([]);
 
-  // i += 1;
-  // if (i == 2) {
-  //   showVoice.value = false;
-  //   inputMessage.value = "我想喝清淡一點的湯";
-  // }
+//食療推薦歷史
+const allDietTherapy = ref([]);
+//食療推薦
+const getDietTherapy = ref([]);
+
+let i = 0;
+/**
+ * 選餐推薦
+ * 語音
+ */
+const closeVoice = async () => {
+  showAnima.value = !showAnima.value;
+  await getRecommend(sessionStorage.getItem("token"));
+  showAnima.value = !showAnima.value;
+  showVoice.value = false;
+  console.log(allSelectMeal.value);
 };
 
 let k = 0;
-const closeVoiceSymptom = () => {
-  // console.log(sessionStorage.getItem("token"));
+/**
+ * 食療推薦
+ * 語音
+ */
+const closeVoiceSymptom = async () => {
   showAnimaSymptom.value = !showAnimaSymptom.value;
-  getRecommendAPI(sessionStorage.getItem("token"));
-  // showAnimaSymptom.value = !showAnimaSymptom.value;
-  // k += 1;
-  // if (k == 2) {
-  //   showVoiceSymptom.value = false;
-  //   inputSymptMessage.value = "我最近頭痛心情不好";
-  // }
+  await getDietTherapyRecommend(sessionStorage.getItem("token"));
+  showAnimaSymptom.value = !showAnimaSymptom.value;
+  showVoiceSymptom.value = false;
+  console.log(allDietTherapy.value);
+};
+
+/**
+ * api
+ * 小助手
+ */
+const getRecommend = async (token) => {
+  await axios
+    .get("http://localhost:55688/api/Dish/recommend", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      // console.log("getUser", res.data);
+      getSelectMeal.value = res.data.data;
+      res.data.data.forEach((meal) => {
+        meal.image = "data:application/png;base64," + meal.image;
+      });
+      allSelectMeal.value.push(getSelectMeal.value);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+/**
+ * DietTherapy
+ * 食療
+ */
+const getDietTherapyRecommend = async (token) => {
+  await axios
+    .get("http://localhost:55688/api/Dish/recommend", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      // console.log("getUser", res.data);
+      getDietTherapy.value = res.data.data;
+      res.data.data.forEach((meal) => {
+        meal.image = "data:application/png;base64," + meal.image;
+      });
+      allDietTherapy.value.push(getDietTherapy.value);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 </script>
 <style scoped>
