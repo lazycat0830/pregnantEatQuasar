@@ -3,7 +3,7 @@ import { useRouter } from "vue-router";
 
 export default function () {
   const router = useRouter();
-  //登入
+  //登入 v
   const LoginAPI = (loginData) => {
     axios
       .post("http://localhost:55688/api/Auth/login", loginData)
@@ -46,7 +46,7 @@ export default function () {
         console.log(error);
       });
   };
-  //註冊
+  //註冊 v
   //註冊一定要圖片
   const RegisterAPI = (fromData) => {
     axios
@@ -62,16 +62,23 @@ export default function () {
         console.log(error);
       });
   };
-  //取得所有餐點
-  const getDishesAPI = () => {
-    axios
-      .get("http://localhost:55688/api/Dish/getDishes")
+  //取得所有餐點 v
+  const getDishesAPI = async (token) => {
+    let dishesData;
+    await axios
+      .get("http://localhost:55688/api/Dish/getDishes", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((res) => {
         console.log("getDishes", res.data.data);
+        dishesData = res.data.data;
       })
       .catch((error) => {
         console.log(error);
       });
+    return dishesData;
   };
   //取得使用者資料
   const getUserAPI = (token) => {
@@ -103,10 +110,11 @@ export default function () {
         console.log(error);
       });
   };
-  //忘記密碼 400錯誤
+  //忘記密碼 v
   const ForgetpasswordAPI = (account) => {
+    console.log(account);
     axios
-      .get("http://localhost:55688/api/Auth/forgetpassword", {
+      .post(`http://localhost:55688/api/Auth/forgetpassword`, {
         account: account,
       })
       .then((res) => {

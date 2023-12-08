@@ -364,7 +364,7 @@
                         :key="food"
                       >
                         <div class="row justify-center">
-                          <q-img :src="food.src"></q-img>
+                          <q-img :src="food.image"></q-img>
                           {{ food.name }}
                         </div>
                       </q-card>
@@ -659,12 +659,23 @@
 </template>
 
 <script setup>
-import { ref, defineProps, computed, onMounted, nextTick, watch } from "vue";
+import {
+  ref,
+  defineProps,
+  computed,
+  onMounted,
+  nextTick,
+  watch,
+  reactive,
+} from "vue";
 import { useRouter } from "vue-router";
 import Sortable from "sortablejs";
 // import { Drag, Drop } from "vue3-drag-drop";
 import askOrder from "src/pages/pregnant/components/askOrder.vue";
 import voicePage from "./components/voicePage.vue";
+
+import api from "../javascript/API";
+const { getRecommendAPI, getDishesAPI } = api();
 
 const changeOrder = ref({ label: "主食", value: "main" });
 const nowAction = ref("changeOrder");
@@ -674,10 +685,82 @@ console.log(hisoryState.value);
 
 const router = useRouter();
 
-onMounted(() => {
+const changeFood = reactive({
+  main: [],
+  dishes: [],
+  soup: [],
+  fruit: [
+    {
+      name: "水蜜桃",
+      image: "/public/images/menu/fruit/水蜜桃.jpg",
+    },
+    {
+      name: "木瓜",
+      image: "/public/images/menu/fruit/木瓜.png",
+    },
+    {
+      name: "香蕉",
+      image: "/public/images/menu/fruit/香蕉.jpg",
+    },
+    {
+      name: "芭樂",
+      image: "/public/images/menu/fruit/芭樂.png",
+    },
+    {
+      name: "奇異果",
+      image: "/public/images/menu/fruit/奇異果.jpeg",
+    },
+    {
+      name: "橘子",
+      image: "/public/images/menu/fruit/橘子.png",
+    },
+    {
+      name: "草莓",
+      image: "/public/images/menu/fruit/草莓.jpg",
+    },
+    {
+      name: "蜜棗",
+      image: "/public/images/menu/fruit/蜜棗.jpg",
+    },
+    {
+      name: "葡萄",
+      image: "/public/images/menu/fruit/葡萄.jpg",
+    },
+  ],
+});
+
+const allDishes = ref([]);
+
+onMounted(async () => {
   // forceLandscapeOrientation();
   // drop();
   // drawPlate();
+  await getDishesAPI(sessionStorage.getItem("token")).then((data) => {
+    allDishes.value = data;
+  });
+  console.log(allDishes.value);
+  let mainArray = [],
+    disheArray = [],
+    soupArray = [];
+
+  allDishes.value.forEach((dishe) => {
+    dishe.image = "data:application/png;base64," + dishe.image;
+    if (dishe.type == "主食") {
+      mainArray.push(dishe);
+    } else if (dishe.type == "湯品") {
+      soupArray.push(dishe);
+    } else if (dishe.type == "菜色") {
+      disheArray.push(dishe);
+    } else {
+      changeFood.main = [];
+      changeFood.soup = [];
+      changeFood.dishes = [];
+    }
+  });
+  changeFood.main = mainArray;
+  changeFood.soup = soupArray;
+  changeFood.dishes = disheArray;
+
   const container = document.querySelector(".container");
   let source;
   container.ondragstart = (e) => {
@@ -966,158 +1049,6 @@ const sumbitSymptMessage = () => {
   }, 50);
 };
 
-const changeFood = ref({});
-changeFood.value = {
-  main: [
-    {
-      name: "培根義大利麵",
-      src: "/public/images/menu/mainMeal/培根義大利麵.jpg",
-    },
-    {
-      name: "紫米飯",
-      src: "/public/images/menu/mainMeal/紫米飯.jpg",
-    },
-    {
-      name: "麻油煎蛋麵線",
-      src: "/public/images/menu/mainMeal/麻油煎蛋麵線.jpg",
-    },
-    {
-      name: "地瓜粥",
-      src: "/public/images/menu/mainMeal/地瓜粥.jpg",
-    },
-    {
-      name: "香鬆飯",
-      src: "/public/images/menu/mainMeal/三島香鬆飯.jpg",
-    },
-    {
-      name: "黃耆枸杞粥",
-      src: "/public/images/menu/mainMeal/黃耆枸杞粥.jpg",
-    },
-    {
-      name: "鮭魚意大利麵",
-      src: "/public/images/menu/mainMeal/鮭魚意大利麵.jpg",
-    },
-    {
-      name: "牛肉馬鈴薯泥",
-      src: "/public/images/menu/mainMeal/牛肉馬鈴薯泥.png",
-    },
-  ],
-  dishes: [
-    {
-      name: "青龍炒肉片",
-      src: "/public/images/menu/Dishes/青龍炒肉片.jpg",
-    },
-    {
-      name: "紅麴燒肉片",
-      src: "/public/images/menu/Dishes/紅麴燒肉片.jpg",
-    },
-    {
-      name: "野菇西芹",
-      src: "/public/images/menu/Dishes/野菇西芹.png",
-    },
-    {
-      name: "黑胡椒豬柳",
-      src: "/public/images/menu/Dishes/黑胡椒豬柳.jpg",
-    },
-    {
-      name: "干貝蒸蛋",
-      src: "/public/images/menu/Dishes/干貝蒸蛋.png",
-    },
-    {
-      name: "麻油龍鬚菜",
-      src: "/public/images/menu/Dishes/麻油龍鬚菜.png",
-    },
-    {
-      name: "蝦仁玉米豆腐",
-      src: "/public/images/menu/Dishes/蝦仁玉米豆腐.jpg",
-    },
-    {
-      name: "青椒炒牛肉",
-      src: "/public/images/menu/Dishes/青椒炒牛肉.jpg",
-    },
-  ],
-  soup: [
-    {
-      name: "栗子紅棗雞",
-      src: "/public/images/menu/Soup/栗子紅棗雞.jpg",
-    },
-    {
-      name: "麻油雞湯",
-      src: "/public/images/menu/Soup/麻油雞湯.jpg",
-    },
-    {
-      name: "藥燉排骨湯",
-      src: "/public/images/menu/Soup/藥燉排骨湯.jpg",
-    },
-    {
-      name: "藥膳燉雞湯",
-      src: "/public/images/menu/Soup/藥膳燉雞湯.jpg",
-    },
-    {
-      name: "紅麴燒肉片",
-      src: "/public/images/menu/Soup/何首烏養生燉湯.jpg",
-    },
-    {
-      name: "九尾雞湯",
-      src: "/public/images/menu/Soup/九尾雞湯_0.jpg",
-    },
-    {
-      name: "金針薑絲雞湯",
-      src: "/public/images/menu/Soup/金針薑絲雞湯_0.jpg",
-    },
-    {
-      name: "青木瓜排骨湯",
-      src: "/public/images/menu/Soup/青木瓜排骨湯_0.jpg",
-    },
-    {
-      name: "四物排骨湯",
-      src: "/public/images/menu/Soup/四物排骨湯.jpg",
-    },
-    {
-      name: "牛肉高麗菜湯",
-      src: "/public/images/menu/Soup/牛肉高麗菜湯.png",
-    },
-  ],
-  fruit: [
-    {
-      name: "水蜜桃",
-      src: "/public/images/menu/fruit/水蜜桃.jpg",
-    },
-    {
-      name: "木瓜",
-      src: "/public/images/menu/fruit/木瓜.png",
-    },
-    {
-      name: "香蕉",
-      src: "/public/images/menu/fruit/香蕉.jpg",
-    },
-    {
-      name: "芭樂",
-      src: "/public/images/menu/fruit/芭樂.png",
-    },
-    {
-      name: "奇異果",
-      src: "/public/images/menu/fruit/奇異果.jpeg",
-    },
-    {
-      name: "橘子",
-      src: "/public/images/menu/fruit/橘子.png",
-    },
-    {
-      name: "草莓",
-      src: "/public/images/menu/fruit/草莓.jpg",
-    },
-    {
-      name: "蜜棗",
-      src: "/public/images/menu/fruit/蜜棗.jpg",
-    },
-    {
-      name: "葡萄",
-      src: "/public/images/menu/fruit/葡萄.jpg",
-    },
-  ],
-};
-
 const showVoice = ref(false);
 const showAnima = ref(false);
 const showVoiceSymptom = ref(false);
@@ -1128,15 +1059,12 @@ const closeVoice = () => {
   showAnima.value = !showAnima.value;
   getRecommendAPI(sessionStorage.getItem("token"));
 
-  i += 1;
-  if (i == 2) {
-    showVoice.value = false;
-    inputMessage.value = "我想喝清淡一點的湯";
-  }
+  // i += 1;
+  // if (i == 2) {
+  //   showVoice.value = false;
+  //   inputMessage.value = "我想喝清淡一點的湯";
+  // }
 };
-
-import api from "../javascript/API";
-const { getRecommendAPI } = api();
 
 let k = 0;
 const closeVoiceSymptom = () => {
@@ -1144,11 +1072,11 @@ const closeVoiceSymptom = () => {
   showAnimaSymptom.value = !showAnimaSymptom.value;
   getRecommendAPI(sessionStorage.getItem("token"));
   // showAnimaSymptom.value = !showAnimaSymptom.value;
-  k += 1;
-  if (k == 2) {
-    showVoiceSymptom.value = false;
-    inputSymptMessage.value = "我最近頭痛心情不好";
-  }
+  // k += 1;
+  // if (k == 2) {
+  //   showVoiceSymptom.value = false;
+  //   inputSymptMessage.value = "我最近頭痛心情不好";
+  // }
 };
 </script>
 <style scoped>

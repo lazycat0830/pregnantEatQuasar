@@ -18,14 +18,14 @@
             <div class="row justify-between" style="width: 30%">
               <q-radio
                 v-model="RegisterObject.role"
-                val="產婦"
+                val="main"
                 outlined
                 dense
                 label="產婦"
               />
               <q-radio
                 v-model="RegisterObject.role"
-                val="烹飪者"
+                val="maker"
                 outlined
                 dense
                 label="烹飪者"
@@ -130,7 +130,13 @@
         </tr>
         <tr>
           <td>
-            <q-file outlined v-model="picture" label="Outlined" />
+            <InputFile
+              style="width: 80%"
+              :name="'picture'"
+              :ext="['jpg', 'jpeg', 'png']"
+              :maxSize="10"
+              @update-files="getFile"
+            ></InputFile>
           </td>
         </tr>
 
@@ -158,7 +164,7 @@
                   padding: 5px 0px;
                   font-size: 16px;
                 "
-                >驗證</q-btn
+                >註冊</q-btn
               >
             </div>
           </td>
@@ -198,7 +204,7 @@
 <script setup>
 import HeaderLayout from "./components/HeaderLayout.vue";
 import { reactive, ref } from "vue";
-
+import InputFile from "src/components/InputFile.vue";
 import api from "../javascript/API";
 import { Input } from "postcss";
 
@@ -216,22 +222,28 @@ const RegisterObject = reactive({
   ispasswordCheck: true,
   phone: "",
   email: "",
-  role: "產婦",
+  role: "main",
 });
-
+const registerFormData = new FormData();
 const doRegister = () => {
   console.log(RegisterObject);
   console.log(picture);
-  const registerFormData = new FormData();
   registerFormData.append("account", RegisterObject.account);
   registerFormData.append("password", RegisterObject.password);
   registerFormData.append("name", RegisterObject.name);
   registerFormData.append("phone", RegisterObject.phone);
   registerFormData.append("email", RegisterObject.email);
-
   registerFormData.append("role", RegisterObject.role);
-  registerFormData.append("picture", picture);
+  // registerFormData.append("picture", picture);
   RegisterAPI(registerFormData);
+};
+
+const getFile = (fileObj) => {
+  const updateName = fileObj.name;
+  registerFormData.delete(updateName);
+  if (fileObj.files) {
+    registerFormData.append("picture", fileObj.files);
+  }
 };
 </script>
 <style>

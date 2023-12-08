@@ -18,11 +18,11 @@
           <tr>
             <td>
               <q-input
-                v-model="RegisterObject.account"
+                v-model="account"
                 dense
                 outlined
                 style="width: 80%"
-                label="Email"
+                label="帳號"
               />
             </td>
           </tr>
@@ -39,11 +39,12 @@
                 "
               >
                 <!-- to="/SetRoles" -->
+                <!-- toolbar = true -->
                 <q-btn
                   rounded
                   dense
                   color="orange-14"
-                  @click="toolbar = true"
+                  @click="getForgetPassword()"
                   style="
                     width: 60%;
                     margin: 5px 0px;
@@ -90,20 +91,19 @@
 </template>
 <script setup>
 import HeaderLayout from "./components/HeaderLayout.vue";
+import api from "../javascript/API";
 import { ref } from "vue";
+
+const { ForgetpasswordAPI } = api();
+
 const isPwd = ref(true);
 const toolbar = ref(false);
-const RegisterObject = ref({
-  name: "",
-  account: "",
-  password: "",
-  ispassword: true,
-  passwordCheck: "",
-  ispasswordCheck: true,
-  phone: "",
-  email: "",
-  birthday: "",
-});
+const account = ref("");
+
+const getForgetPassword = () => {
+  ForgetpasswordAPI(account.value);
+  toolbar.value = true;
+};
 </script>
 <style>
 .LoginTable tr td {
